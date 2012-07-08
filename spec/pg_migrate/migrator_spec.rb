@@ -7,7 +7,11 @@ describe Migrator do
 
     manifest.length.should == 1
     manifest[0].should == "single_migrations/single1.sql"
+  end
 
+  it "fail on bad manifest reference" do
+    migrator = Migrator.new({})
+    expect { migrator.validate_manifest('absolutely_nowhere_real', ["migration1.sql"]) }.to raise_exception
   end
 
 end

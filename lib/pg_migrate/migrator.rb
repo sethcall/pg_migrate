@@ -1,4 +1,5 @@
 require 'pg'
+require 'pathname'
 
 module PgMigrate
 
@@ -63,8 +64,8 @@ module PgMigrate
     end
 
     def process_manifest()
-      load_manifest
-      validate_manifest
+      @manifest = load_manifest(manifest)
+      validate_manifest(@manifest)
     end
 
     def load_manifest(manifest_path)
@@ -83,8 +84,14 @@ module PgMigrate
       return manifest
     end
     
-    def validate_manifest
-      
+    def validate_manifest(manifest_path, manifest)
+      # each item in the manifest should be a valid file
+      manifest.each do |item|
+        item_path = File.join(File.dirname(manifest_path), item)
+        if !Pathname.exist?
+          raise "manifest reference #{manifest} does not exist at path #{item_path}"
+        end
+      end
     end
 
   end
