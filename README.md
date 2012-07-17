@@ -11,8 +11,10 @@ The primary drivers of the design of this project are as follows:
 *** Ruby
 *** Java
 * When deploying the migrations to production environments, the command-line is ofter more desirable than code-integrated solutions.
+** The first targeted 'command-line' is PSQL.  Any migration should run with `psql -f migration.sql`.
 * Abstractions away from raw SQL are a distraction when you have targeted Postgresql as your own database.
 * Once you embrace `CREATE FUNCTION`, even complex migrations are readily possible in SQL.
 * A terse, single file describing the order of migrations is simple (perhaps too simple, eventually), but allows you to focus on your overall set of migrations.
 * A build step converts your migrations from your SQL to lightly templated versions of your SQL, and also gives pg_migrate a chance to run any tests you have defined against each migration in isolation. 
 * Down migrations are important, and will be supported shortly.
+* Each file that results from the build step should be 'mistake proof', in that someone trying to manually migrate can accidentally run the wrong migration (either because it's already been run or isn't the next logical migration to run), and pg_migrate will reject it.
