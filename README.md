@@ -13,7 +13,8 @@ Migrations are always defined in Postgresql SQL.  This means the developer and o
 Native Code Integration
 -----------------------
 When developing and testing, native code integration of the migrations is often more desirable than command-line oriented solutions.  So, pg_migrate needs to exist in many languages to be compelling.  This is made possible by embedding virtually all logic in SQL templates that wrap your migration SQL, and relying on code to merely execute the resulting SQL.
-* So far, only *ruby* is supported.
+* [pg_migrate ruby](https://github.com/sethcall/pg_migrate_ruby)
+* [pg_migrate java](https://github.com/sethcall/pg_migrate_java) (not yet released)
 
 Command-Line Integration
 ------------------------
