@@ -58,6 +58,7 @@ Compared to the _Test_ phase, these patterns show two fundamentally different re
 #### Small Projects vs Monolithic
 With DVCS such as Git and Mercurial, technologies such as Maven, Ivy, and Gemfiles providing excellent dependency management, and so many powerful but different languages to choose from, it's becoming less desirable or practical to have monolithic projects.  For instance, even though Rails is a fanstastic web development framework, that doesn't mean it makes sense for you to do all development in Ruby.  Say then you have both a Rails app and Java application listening on a message queue, with the Java application performing long-running tasks on the behalf of the Rails app.  Further, let's say both apps want access to the same database.  Ideally, then, your database migrations are in a common, shared repository to both of these applications. 
 
+##### Schemas as Common Dependencies
 pg_migrate is completely compatible with this style of 'numerous, small project' development.  It does this by supporting multiple languages easily, and by supporting the concept of code bundling of the manifest.  (i.e, an important feature is to allow a single 'pg_migrate manifest' project to readily generate a .jar, .gem, or whatever other code artifacting mechanism exists to allow your 'leaf projects' (the Rails app and Java app, in this example) a way to simply depend on a library that represents their schema, rather than define it themselves.
    
 ### Phase: Deployment to Staging Environment
