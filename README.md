@@ -47,10 +47,14 @@ However, with any existing tool (that I've seen), the focus is on the command-li
 As many developers would agree, it's much more desirable to only require a library; not require an entire toolchain that may or may not be comfortable to all developers on the team.  This keeps the environment setup down to a minimum.   Also, versioning a library is usually a process that a developer understands much more comfortably then somehow enforcing that the correct version of your migration tool is installed.
 
 ### Phase: Development
-#### Usage Patterns
-During development, there are two competing migration patterns.  One is to expect the developer to know when they must migrate their development database.  An example is the common way many use the Rails `rake db:migrate`... manually, at the command-line.  The other pattern is to code into your application the schema migration process on startup, so that the application is guaranteed to have a correct database (much like the test usecase). 
+#### Competing Usage Patterns
+During development, there are two competing migration patterns.  
+##### Manual, Command-Line Migrations
+One is to expect the developer to know when they must migrate their development database.  An example is the common way many use the Rails `rake db:migrate`... manually, at the command-line. 
+##### Automatic Migrations on software startup
+ The other pattern is to code into your application the schema migration process on startup, so that the application is guaranteed to have a correct database (much like the test usecase). 
 
-Compared to the Test phase, these patterns show two fundamentally different requirements; a reasonable command-line experience as well as native code integration.  
+Compared to the _Test_ phase, these patterns show two fundamentally different requirements; a reasonable command-line experience as well as native code integration.  
 #### Small Projects vs Monolithic
 With DVCS such as Git and Mercurial, technologies such as Maven, Ivy, and Gemfiles solving artifact resolution, and so many powerful but different languages to choose from, it's becoming less desirable or practical to have monolithic projects.  For instance, even though Rails is a fanstastic web development framework, that doesn't mean it makes sense for you to do all development in Ruby.  Say then you have both a Rails app and Java application listening on a message queue, with the Java application performing long-running tasks on the behalf of the Rails app.  Further, let's say both apps want access to the same database.  Ideally, then, your database migrations are in a common, shared repository to both of these applications. 
 
