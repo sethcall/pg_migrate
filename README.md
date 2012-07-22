@@ -5,16 +5,18 @@ This project provides a simple and transparent schema migration tool.
 
 The primary drivers of the design of this project are as follows:
 
-Natural Support for Common Phases of Software Development
+Design: Natural Support for the Phases of Software Development
 ----------------------------------------------------------
 This is the major reason this project exists.  No tool correctly satisfies this requirement.  
-What is meant by *Natural Support*?  That the tool offers a means of usage that fits with the common-case expectations of that class of user at that time.   So what are the phases?
+What is meant by *Natural Support*?  Natural support implies that the tool offers a means of usage that fits with the common-case expectations of that class of user at that time.  Developers expect language support.  Operations expects code support.  And sometimes vice-versa. 
+
+ So what are the phases?
 * Test
 * Development
 * Deployment to Staging Environment
 * Deployment to Production
 
-### Test
+### Phase: Test
 In tests of an application that uses a database, it is most desirable to have a native language mechanism to cause a 'up' schema migration at the start of the test suite or test instance. For instance, in a Ruby rspec test:
 
 ```ruby
@@ -44,7 +46,7 @@ However, with any existing tool (that I've seen), the focus is on the command-li
 
 As many developers would agree, it's much more desirable to only require a library; not require an entire toolchain that may or may not be comfortable to all developers on the team.  This keeps the environment setup down to a minimum.   Also, versioning a library is usually a process that a developer understands much more comfortably then somehow enforcing that the correct version of your migration tool is installed.
 
-### Development
+### Phase: Development
 #### Usage Patterns
 During development, there are two competing migration patterns.  One is to expect the developer to know when they must migrate their development database.  An example is the common way many use the Rails `rake db:migrate`... manually, at the command-line.  The other pattern is to code into your application the schema migration process on startup, so that the application is guaranteed to have a correct database (much like the test usecase). 
 
@@ -54,7 +56,7 @@ With DVCS such as Git and Mercurial, technologies such as Maven, Ivy, and Gemfil
 
 pg_migrate is completely compatible with this style of 'numerous, small project' development.  It does this by supporting multiple languages easily, and by supporting the concept of code bundling of the manifest.  (i.e, an important feature is to allow a single 'pg_migrate manifest' project to readily generate a .jar, .gem, or whatever other code artifacting mechanism exists to allow your 'leaf projects' (the Rails app and Java app, in this example) a way to simply depend on a library that represents their schema, rather than define it themselves.
    
-### Deployment to Staging Environment
+### Phase: Deployment to Staging Environment
 If you ascribe to the principles of automation (such as [DevOps](http://en.wikipedia.org/wiki/DevOps)), ideally the migration of the database occurs automatically.  Still, the database can present a challenge.  Should the software, when it starts, migrate the database?  What if there are multiple instances of the same software?  Or what if there are multiple but separate components that both refer to the same database?  Instead, should the migrations be invokable from command-line, and some piece of automation run before all the software updates?
 
 All of these are valid approaches, and frankly, if you actually have a staging environment, you probably have enough to worry about.  So, all options should be open to you.  Flexibility is power.
@@ -67,7 +69,7 @@ So, pg_migrate supports these use cases regardless if you are using pg_migrate f
 A short example.  With these capabilities, one can use Puppet in a simple way, and have 'eventual stability', even in a multiple node staging deployment.  In other words, say every piece of software is allowed to migrate the database on startup, and say that you update all your software in Puppet.  Over the course of 30 minutes (assuming the default Puppet sync interval), all of your software should have updated, and the 1st one to have updated would have updated the database.  While it's true for 30 minutes some of your software may have been 'upset', once they update and expect the new schema, all is well again.  This level of imperfection is often suitable for a staging environment, where the act of updating should be easy and hands-off, even if it means it will take a while for the environment to become stable. 
 
 
-### Deployment to Production
+### Phase: Deployment to Production
 Many of the points made in the staging environment are valid here, as well.   But let's assume your production has a 0-downtime requirement (or at least, very very short).  Or if it's not a requirement in your environment, you may still consider it a laudable goal anyway. 
 
 In this situation, updates to the database are often considered manual-only.  No software should be allowed to update the database; it's just too sensitive of an operation to not have a console open and watching all that transpires.  To that end, pg_migrate follows a few principles to help:
