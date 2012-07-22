@@ -40,7 +40,7 @@ Or perhaps in a Java TestNG test:
 
 The approach shown in these examples ensures that the database is correct and up-to-date before the test runs.  Allowing the test harness to completely set up a correct test environment minimizes confusion and headaches.
 
-However, with any existing tool (that I've seen), the focus is on the command-line experience, or at most, language support for just one language.  An example:  if you using a top-notch migration tool like SQL Alchemy, but you aren't using Python... then you need to make sure you have Python installed, and the SQL Alchemy package installed in that version of Python.  You have to make sure that happens on every developer machine and the build server, at a minimum.
+However, with any existing tool (that I've seen), the focus is on the command-line experience, or at most, language support for just one language.  An example:  if you using a top-notch migration tool like [SQL Alchemy](http://www.sqlalchemy.org/), but you aren't using Python... then you need to make sure you have Python installed, and the SQL Alchemy package installed in that version of Python.  You have to make sure that happens on every developer machine and the build server, at a minimum.
 
 As many developers would agree, it's much more desirable to only require a library; not require an entire toolchain that may or may not be comfortable to all developers on the team.  This keeps the environment setup down to a minimum.   Also, versioning a library is usually a process that a developer understands much more comfortably then somehow enforcing that the correct version of your migration tool is installed.
 
