@@ -1,3 +1,6 @@
 [submodule "ruby"]
 	path = ruby
 	url = git@github.com:sethcall/pg_migrate_ruby.git
+[submodule "java"]
+	path = java
+	url = git@github.com:sethcall/pg_migrate_java.git

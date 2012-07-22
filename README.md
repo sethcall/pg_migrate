@@ -5,6 +5,76 @@ This project provides a simple and transparent schema migration tool.
 
 The primary drivers of the design of this project are as follows:
 
+Natural Support for Common Phases of Software Development
+----------------------------------------------------------
+This is the major reason this project exists.  No tool correctly satisfies this requirement.  
+What is meant by *Natural Support*?  That the tool offers a means of usage that fits with the common-case expectations of that class of user at that time.   So what are the phases?
+* Test
+* Development
+* Deployment to Staging Environment
+* Deployment to Production
+
+### Test
+In tests of an application that uses a database, it is most desirable to have a native language mechanism to cause a 'up' schema migration at the start of the test suite or test instance. For instance, in a Ruby rspec test:
+
+```ruby
+    before(:all) do
+        # let's make sure we have a clean database before the test runs
+        drop_and_create_database()
+        # now, apply our schema migrations
+        run_up_migrations()
+    end
+```
+
+Or perhaps in a Java TestNG test:
+
+```java
+    @BeforeTest
+    public void beforeTest() {
+        // make sure we have a clean database before the test runs
+        dropAndCreateDatabase()
+        // now, apply our schema migrations
+        runUpMigrations()    
+    }
+```
+
+The approach shown in these examples ensures that the database is correct and up-to-date before the test runs.  Allowing the test harness to completely set up a correct test environment minimizes confusion and headaches.
+
+However, with any existing tool (that I've seen), the focus is on the command-line experience, or at most, language support for just one language.  An example:  if you using a top-notch migration tool like SQL Alchemy, but you aren't using Python... then you need to make sure you have Python installed, and the SQL Alchemy package installed in that version of Python.  You have to make sure that happens on every developer machine and the build server, at a minimum.
+
+As many developers would agree, it's much more desirable to only require a library; not require an entire toolchain that may or may not be comfortable to all developers on the team.  This keeps the environment setup down to a minimum.   Also, versioning a library is usually a process that a developer understands much more comfortably then somehow enforcing that the correct version of your migration tool is installed.
+
+### Development
+#### Usage Patterns
+During development, there are two competing migration patterns.  One is to expect the developer to know when they must migrate their development database.  An example is the common way many use the Rails `rake db:migrate`... manually, at the command-line.  The other pattern is to code into your application the schema migration process on startup, so that the application is guaranteed to have a correct database (much like the test usecase). 
+
+Compared to the Test phase, these patterns show two fundamentally different requirements; a reasonable command-line experience as well as native code integration.  
+#### Small Projects vs Monolithic
+With DVCS such as Git and Mercurial, technologies such as Maven, Ivy, and Gemfiles solving artifact resolution, and so many powerful but different languages to choose from, it's becoming less desirable or practical to have monolithic projects.  For instance, even though Rails is a fanstastic web development framework, that doesn't mean it makes sense for you to do all development in Ruby.  Say then you have both a Rails app and Java application listening on a message queue, with the Java application performing long-running tasks on the behalf of the Rails app.  Further, let's say both apps want access to the same database.  Ideally, then, your database migrations are in a common, shared repository to both of these applications. 
+
+pg_migrate is completely compatible with this style of 'numerous, small project' development.  It does this by supporting multiple languages easily, and by supporting the concept of code bundling of the manifest.  (i.e, an important feature is to allow a single 'pg_migrate manifest' project to readily generate a .jar, .gem, or whatever other code artifacting mechanism exists to allow your 'leaf projects' (the Rails app and Java app, in this example) a way to simply depend on a library that represents their schema, rather than define it themselves.
+   
+### Deployment to Staging Environment
+If you ascribe to the principles of automation (such as [DevOps](http://en.wikipedia.org/wiki/DevOps)), ideally the migration of the database occurs automatically.  Still, the database can present a challenge.  Should the software, when it starts, migrate the database?  What if there are multiple instances of the same software?  Or what if there are multiple but separate components that both refer to the same database?  Instead, should the migrations be invokable from command-line, and some piece of automation run before all the software updates?
+
+All of these are valid approaches, and frankly, if you actually have a staging environment, you probably have enough to worry about.  So, all options should be open to you.  Flexibility is power.
+
+So, pg_migrate supports these use cases regardless if you are using pg_migrate from the command-line, or via code integration:
+* Migrations are idempotent.  Multiple attempts at the same migration is safe. 
+* _Migrations attempts can occur concurrently_, safely, no matter how many clients are trying to migrate the database.  This is made possibly by use of an exclusive lock on the pg_migrations table during migrations, and a purposeful lack of state between individual migration steps in the overall migration.
+* A migration attempt using an old build of your migrations will fail.  Unless you deliberately ignore the return code or exception thrown, this should cause your software to fail.  Ultimately, a fail-fast mentality is most sensible in the face of unknown database state.
+
+A short example.  With these capabilities, one can use Puppet in a simple way, and have 'eventual stability', even in a multiple node staging deployment.  In other words, say every piece of software is allowed to migrate the database on startup, and say that you update all your software in Puppet.  Over the course of 30 minutes (assuming the default Puppet sync interval), all of your software should have updated, and the 1st one to have updated would have updated the database.  While it's true for 30 minutes some of your software may have been 'upset', once they update and expect the new schema, all is well again.  This level of imperfection is often suitable for a staging environment, where the act of updating should be easy and hands-off, even if it means it will take a while for the environment to become stable. 
+
+
+### Deployment to Production
+Many of the points made in the staging environment are valid here, as well.   But let's assume your production has a 0-downtime requirement (or at least, very very short).  Or if it's not a requirement in your environment, you may still consider it a laudable goal anyway. 
+
+In this situation, updates to the database are often considered manual-only.  No software should be allowed to update the database; it's just too sensitive of an operation to not have a console open and watching all that transpires.  To that end, pg_migrate follows a few principles to help:
+
+* The SQL executed by psql or by code is same (ok: very, very minor differences).  This means even if next migration intended for production has only be executed via code, it simply shouldn't matter; it's the same SQL being processed in any phase.  
+* Every file, if run as a complete file from `psql -f`, is safe to run.  Specifically, an already-run migration file will not attempt to process anything. A migration that's not next in-line (say there are two migration steps, and you accidentally chose the last one to run) will also not process anything.  Finally, there is a 'all-in-one' migration file generated, that you can blindly pass to psql.  Using this file is no different than executing each migration one-by-one.  While wasteful in the sense that already-run migrations will be ignored, it's also simple and safe. 
+
 Migrations in SQL
 -----------------
 
