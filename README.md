@@ -3,6 +3,15 @@ pg_migrate
 
 This project provides a simple and transparent schema migration tool, that strives to make all parties involved with the database happy.
 
+Why this project?
+-----------------
+
+You may need this migration tool if one or more are true:
+* You work in multiple languages, or develop in a language that isn't python or perl (which seem to have all the best migration tools)
+* You are tired of abstraction layers between you and SQL
+* You want to use your schema migrations across multiple projects, instead of one project 'owning' the schema
+* You want very little code and dynamic behavior associated with your shema migrations
+
 At a Glance
 -----------
 
@@ -30,6 +39,10 @@ mkdir my_corp_schemas/up
 touch my_corp_schemas/up/first.sql 
 ```
 
+```
+# my manifest
+first.sql
+```
 
 ```
 -- first.sql
