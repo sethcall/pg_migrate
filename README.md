@@ -1,7 +1,114 @@
 pg_migrate
 ==========
 
-This project provides a simple and transparent schema migration tool. 
+This project provides a simple and transparent schema migration tool.
+
+At a Glance
+-----------
+
+## Install pg_migrate 
+# if you are into ruby
+gem install pg_migrate
+
+# if you like java
+#todo
+
+## Create a pg_migrate project
+Create a project that defines your manifest.
+```bash
+mkdir my_corp_schemas
+# create your pg_migrate
+touch my_corp_schemas/manifest
+
+# create the 'up' directory. (contains forward migrations)
+mkdir my_corp_schemas/up
+# create your first migration file 
+touch my_corp_schemas/up/first.sql 
+```
+
+
+```
+-- first.sql
+create table users(id BIGSERIAL PRIMARY KEY);    
+```
+
+## Build your migration manifest
+```bash
+# build output
+mkdir target 
+pg_migrate build --source my_corp_schemas --out target/my_corp_schemas
+
+# build an executable jar containing your manifests
+pg_migrate_java package --name com.mycorp.MyCorpSchemas --version 1.0 --source target/my_corp_schemas --out target
+
+# build an executable gem containing your manifests
+pg_migrate_ruby package --name my_corp_schemas --version 1.0 --source target/my_corp_schemas --out target
+
+# tar up the schemas for manual usage
+tar -xvzf my_corp_schemas.tar.gz target/my_corp_schemas
+```
+
+## Add a dependency to your pg_migrate package
+```xml
+<!-- maven example -->
+<dependency>
+    <groupId>com.my_corp</groupId>
+    <artifactId>my_corp_schemas</artifacteId>
+    <version>1.0</version>
+</dependency>
+```
+
+``` ruby
+source 'https://rubygems.org'
+source 'http://gems.my_corp.org'
+
+gem 'my_cormp_schemas', '1.0'
+```
+
+## Migrate in code
+```java
+import com.mycorp.MyCorpSchemas.Migrator
+
+class MyCorpApp {
+    
+    public MyCorpApp() {
+        Connection conn = makeJdbcConnection();
+
+        new Migrator().migrate(conn);
+
+        success();
+    }
+}
+
+```
+
+```ruby
+require 'my_corp_schemas'
+
+class MyCorpApp 
+    def initialize
+        Migrator.new(:pgconn=>conn).migrate
+    end
+end
+```
+
+## Migrate it from psql (command-line #1)
+```bash
+wget http://my_corp.com/my_corp_schemas.tar.gz
+tar -cvzf my_corp_schemas.tar.gz
+# attempt to migrate all migrations (safe even if run before)
+psql -f target/my_corp_schemas/migrate.sql my_corp_db
+# attempt to migrate just one migration (because you are certain you know the next one in line)
+psql -f target/my_corp_schemas/up/first.sql my_corp_db
+```
+
+## Migrate it using pg_migrate (command-line #2)
+```bash
+gem install pg_migrate # you could have used the java vesion of pg_migrate
+wget http://my_corp.com/my_corp_schemas.tar.gz
+tar -cvzf my_corp_schemas.tar.gz
+pg_migrate up --source target/my_corp_schemas --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost" 
+```
 
 The primary drivers of the design of this project are as follows:
 
