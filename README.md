@@ -1,7 +1,7 @@
 pg_migrate
 ==========
 
-This project provides a simple and transparent schema migration tool.
+This project provides a simple and transparent schema migration tool, that strives to make all parties involved with the database happy.
 
 At a Glance
 -----------
