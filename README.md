@@ -6,12 +6,16 @@ This project provides a simple and transparent schema migration tool.
 At a Glance
 -----------
 
+This section is a quick tour to give you feel for the nature of this project:
+
 ## Install pg_migrate 
+```bash
 # if you are into ruby
 gem install pg_migrate
 
 # if you like java
 #todo
+```
 
 ## Create a pg_migrate project
 Create a project that defines your manifest.
@@ -33,22 +37,32 @@ create table users(id BIGSERIAL PRIMARY KEY);
 ```
 
 ## Build your migration manifest
+Build your migration project so that pg_migrate can protect your migrations above with transactions and other guards.  The output of this 'build' process will look a lot like the input.
+
 ```bash
 # build output
 mkdir target 
 pg_migrate build --source my_corp_schemas --out target/my_corp_schemas
 
+ls target/my_corp_schemas
+> manifest
+> up/all.sql # a concatenation of all bootstrap.sql and first.sql (and other 'up' migrations, if you had them)
+> up/bootstrap.sql # creates pg_migrate tables and validation FUNCTIONs
+> up/first.sql # transaction wrapped & validations added to your SQL
+
 # build an executable jar containing your manifests
 pg_migrate_java package --name com.mycorp.MyCorpSchemas --version 1.0 --source target/my_corp_schemas --out target
 
 # build an executable gem containing your manifests
-pg_migrate_ruby package --name my_corp_schemas --version 1.0 --source target/my_corp_schemas --out target
+pg_migrate_ruby package --name my_corp_schemas --version 1.0.0 --source target/my_corp_schemas --out target
 
 # tar up the schemas for manual usage
 tar -xvzf my_corp_schemas.tar.gz target/my_corp_schemas
 ```
 
 ## Add a dependency to your pg_migrate package
+You have now freed all of your projects to depend on the same version of the database, in any language supported by pg_migrate.
+
 ```xml
 <!-- maven example -->
 <dependency>
@@ -62,7 +76,7 @@ tar -xvzf my_corp_schemas.tar.gz target/my_corp_schemas
 source 'https://rubygems.org'
 source 'http://gems.my_corp.org'
 
-gem 'my_cormp_schemas', '1.0'
+gem 'my_cormp_schemas', '1.0.0'
 ```
 
 ## Migrate in code
@@ -97,8 +111,10 @@ end
 wget http://my_corp.com/my_corp_schemas.tar.gz
 tar -cvzf my_corp_schemas.tar.gz
 # attempt to migrate all migrations (safe even if run before)
-psql -f target/my_corp_schemas/migrate.sql my_corp_db
+psql -f target/my_corp_schemas/up/all.sql my_corp_db
 # attempt to migrate just one migration (because you are certain you know the next one in line)
+# if you really did these psql attempts in this order, 
+# the 1st one would succeed (bootstrapping pg_migrate and running first.sql), and this next psql attempt would cause no change to the database.
 psql -f target/my_corp_schemas/up/first.sql my_corp_db
 ```
 
