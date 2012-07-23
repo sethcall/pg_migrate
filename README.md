@@ -67,9 +67,12 @@ If you ascribe to the principles of automation (such as [DevOps](http://en.wikip
 All of these are valid approaches, and frankly, if you actually have a staging environment, you probably have enough to worry about.  So, all options should be open to you.  Flexibility is power.
 
 So, pg_migrate supports these use cases regardless if you are using pg_migrate from the command-line, or via code integration:
-* Migrations are idempotent.  Multiple attempts at the same migration is safe. 
-* _Migrations attempts can occur concurrently_, safely, no matter how many clients are trying to migrate the database.  This is made possibly by use of an exclusive lock on the pg_migrations table during migrations, and a purposeful lack of state between individual migration steps in the overall migration.
-* A migration attempt using an old build of your migrations will fail.  Unless you deliberately ignore the return code or exception thrown, this should cause your software to fail.  Ultimately, a fail-fast mentality is most sensible in the face of unknown database state.
+#### Migrations are idempotent
+Multiple attempts at the same migration are safe to do.
+#### Migrations attempts can occur concurrently
+No matter how many clients are trying to migrate the database, migrations are safe.  This is made possibly by use of an exclusive lock on the pg_migrations table during migrations, and a purposeful lack of state between individual migration steps in the overall migration.
+#### A migration attempt using an old build of your migrations will fail.  
+Unless you deliberately ignore the return code or exception thrown, this should cause your software to fail.  Ultimately, a fail-fast mentality is most sensible in the face of unknown database state.
 
 A short example.  With these capabilities, one can use Puppet in a simple way, and have 'eventual stability', even in a multiple node staging deployment.  In other words, say every piece of software is allowed to migrate the database on startup, and say that you update all your software in Puppet.  Over the course of 30 minutes (assuming the default Puppet sync interval), all of your software should have updated, and the 1st one to have updated would have updated the database.  While it's true for 30 minutes some of your software may have been 'upset', once they update and expect the new schema, all is well again.  This level of imperfection is often suitable for a staging environment, where the act of updating should be easy and hands-off, even if it means it will take a while for the environment to become stable. 
 
