@@ -39,13 +39,14 @@ mkdir my_corp_schemas/up
 touch my_corp_schemas/up/first.sql 
 ```
 
-my_corp_schemas/manifest
 ```
+# my_corp_schemas/manifest - comments are allowed with '#'
 first.sql
 ```
 
-my_corp_schemas/up/first.sql:
+
 ```
+-- my_corp_schemas/up/first.sql - sql comments begin with '--' 
 create table users(id BIGSERIAL PRIMARY KEY);    
 ```
 
