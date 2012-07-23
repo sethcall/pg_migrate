@@ -36,8 +36,8 @@ touch my_corp_schemas/up/first.sql
 create table users(id BIGSERIAL PRIMARY KEY);    
 ```
 
-## Build your migration manifest and create libraries for your schema (gems, jars, ...)!
-Build your migration project so that pg_migrate can protect your migrations above with transactions and other guards.  The output of this 'build' process will look a lot like the input.
+## Build your migration manifest and create libraries for your schema!
+This is where it gets interesting.  Build your migration project so that pg_migrate can protect your migrations above with transactions and other guards.  The output directory of this 'build' process will look a lot like the input, but this project makes a significant extra step and packages the schemas for you into a library format native to your code (optionally). 
 
 ```bash
 # build output
@@ -64,7 +64,7 @@ tar -xvzf my_corp_schemas.tar.gz target/my_corp_schemas
 This is all you.
 
 ## Add a dependency to your pg_migrate package
-You have now freed all of your projects to depend on the same version of the database, in any language supported by pg_migrate.
+Because we build libraries from your schemas, you have now freed _all_ of your projects to depend on the same version of the database, in any language supported by pg_migrate.
 
 ```xml
 <!-- maven example -->
