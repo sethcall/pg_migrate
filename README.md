@@ -36,7 +36,7 @@ touch my_corp_schemas/up/first.sql
 create table users(id BIGSERIAL PRIMARY KEY);    
 ```
 
-## Build your migration manifest
+## Build your migration manifest and create libraries for your schema (gems, jars, ...)!
 Build your migration project so that pg_migrate can protect your migrations above with transactions and other guards.  The output of this 'build' process will look a lot like the input.
 
 ```bash
@@ -60,6 +60,9 @@ pg_migrate_ruby package --name my_corp_schemas --version 1.0.0 --source target/m
 tar -xvzf my_corp_schemas.tar.gz target/my_corp_schemas
 ```
 
+## Publish your dependencies
+This is all you.
+
 ## Add a dependency to your pg_migrate package
 You have now freed all of your projects to depend on the same version of the database, in any language supported by pg_migrate.
 
@@ -79,7 +82,10 @@ source 'http://gems.my_corp.org'
 gem 'my_cormp_schemas', '1.0.0'
 ```
 
-## Migrate in code
+## Migrate it
+### Migrate in Java natively
+No environment setup required.  As long as your built schema jar is in the classpath, you are good to go.
+
 ```java
 import com.mycorp.MyCorpSchemas.Migrator
 
@@ -95,6 +101,8 @@ class MyCorpApp {
 }
 
 ```
+### Migrate in Ruby natively
+No environment setup required.  As long as your built schema gem is installed, you are good to go.
 
 ```ruby
 require 'my_corp_schemas'
@@ -106,7 +114,7 @@ class MyCorpApp
 end
 ```
 
-## Migrate it from psql (command-line #1)
+### Migrate in psql (command-line #1)
 ```bash
 wget http://my_corp.com/my_corp_schemas.tar.gz
 tar -cvzf my_corp_schemas.tar.gz
@@ -118,22 +126,20 @@ psql -f target/my_corp_schemas/up/all.sql my_corp_db
 psql -f target/my_corp_schemas/up/first.sql my_corp_db
 ```
 
-## Migrate it using pg_migrate (command-line #2)
+### Migrate it using pg_migrate (command-line #2)
 ```bash
-gem install pg_migrate # you could have used the java vesion of pg_migrate
+gem install pg_migrate # you could have used the java version of pg_migrate
 wget http://my_corp.com/my_corp_schemas.tar.gz
 tar -cvzf my_corp_schemas.tar.gz
 pg_migrate up --source target/my_corp_schemas --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost" 
 ```
 
-The primary drivers of the design of this project are as follows:
-
-Design: Natural Support for the Phases of Software Development
-----------------------------------------------------------
+Primary Design Driver: No-Impedence Support for the Phases of Software Development
+-----------------------------------------------------------------------
+Database migrations affect developers and ops, and need to be run in varying, conflicting ways throughout the software lifecycle. 
 This is the major reason this project exists.  No tool correctly satisfies this requirement.  
-What is meant by *Natural Support*?  Natural support implies that the tool offers a means of usage that fits with the common-case expectations of that class of user at that time.  Developers expect language support.  Operations expects code support.  And sometimes vice-versa. 
 
- So what are the phases?
+What are the phases of software we are concerned with?
 * Test
 * Development
 * Deployment to Staging Environment
