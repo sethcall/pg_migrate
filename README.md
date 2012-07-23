@@ -39,13 +39,13 @@ mkdir my_corp_schemas/up
 touch my_corp_schemas/up/first.sql 
 ```
 
+my_corp_schemas/manifest
 ```
-# my manifest
 first.sql
 ```
 
+my_corp_schemas/up/first.sql:
 ```
--- first.sql
 create table users(id BIGSERIAL PRIMARY KEY);    
 ```
 
