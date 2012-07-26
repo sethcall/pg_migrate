@@ -123,7 +123,7 @@ require 'my_corp_schemas'
 
 class MyCorpApp 
     def initialize
-        Migrator.new(:pgconn=>conn).migrate
+        MyCorpSchemas::Migrator.new.migrate(:pgconn=>conn)
     end
 end
 ```
