@@ -23,7 +23,7 @@ This section is a quick tour to give you feel for the nature of this project:
 gem install pg_migrate
 
 # if you like java
-#todo
+#todo ; you can check out pg_migrate_java but I need to push the jar to maven still
 ```
 
 ## Create a pg_migrate project
