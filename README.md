@@ -148,6 +148,14 @@ tar -cvzf my_corp_schemas.tar.gz
 pg_migrate up --source target/my_corp_schemas --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost" 
 ```
 
+### Migrate it using your library (command-line #3)
+```bash
+gem install my_corp_schemas # you could have used the java version of my_corp_schemas
+# you don't specify the source; they are bundled in the gem, and this wrapper of pg_migrate knows to look there
+# otherwise, it's the same command-line interface as pg_migrate; just focused on your migrations.
+my_corp_schemas up --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost" 
+```
+
 Primary Design Driver: No-Impedence Support for the Phases of Software Development
 -----------------------------------------------------------------------
 Database migrations affect developers and ops, and need to be run in varying, conflicting ways throughout the software lifecycle. 
