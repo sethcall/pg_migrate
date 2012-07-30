@@ -148,10 +148,11 @@ tar -cvzf my_corp_schemas.tar.gz
 pg_migrate up --source target/my_corp_schemas --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost" 
 ```
 
-### Migrate it using your library (command-line #3)
+### Migrate it using your library's custom version of pg_migrate (command-line #3)
 ```bash
-gem install my_corp_schemas # you could have used the java version of my_corp_schemas
-# you don't specify the source; they are bundled in the gem, and this wrapper of pg_migrate knows to look there
+gem install my_corp_schemas #
+# compare this to using pg_migrate above; notice that you don't the source.
+# your migration sources are are bundled in the gem, and this wrapper of pg_migrate knows to look there
 # otherwise, it's the same command-line interface as pg_migrate; just focused on your migrations.
 my_corp_schemas up --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost" 
 ```
