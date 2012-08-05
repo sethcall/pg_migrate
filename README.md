@@ -23,7 +23,7 @@ This section is a quick tour to give you feel for the nature of this project:
 gem install pg_migrate
 
 # if you like java
-#todo
+#todo ; you can check out pg_migrate_java but I need to push the jar to maven still
 ```
 
 ## Create a pg_migrate project
@@ -146,6 +146,15 @@ gem install pg_migrate # you could have used the java version of pg_migrate
 wget http://my_corp.com/my_corp_schemas.tar.gz
 tar -cvzf my_corp_schemas.tar.gz
 pg_migrate up --source target/my_corp_schemas --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost" 
+```
+
+### Migrate it using your library's custom version of pg_migrate (command-line #3)
+```bash
+gem install my_corp_schemas #
+# compare this to using pg_migrate above; notice that you don't the source.
+# your migration sources are are bundled in the gem, and this wrapper of pg_migrate knows to look there
+# otherwise, it's the same command-line interface as pg_migrate; just focused on your migrations.
+my_corp_schemas up --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost" 
 ```
 
 Primary Design Driver: No-Impedence Support for the Phases of Software Development
