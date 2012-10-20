@@ -64,13 +64,16 @@ ls target/my_corp_schemas
 > up/bootstrap.sql # creates pg_migrate tables and validation FUNCTIONs
 > up/first.sql # transaction wrapped & validations added to your SQL
 
-# build an executable jar containing your manifests
+# migrate some database right now using the result of 'pg_migrate build'
+pg_migrate up --source target/my_corp_schemas --connopts "dbname:my_corp_db user:postgres password:postgres host:localhost"
+
+# build an executable jar containing your manifests, allowing you to use it later in another project
 pg_migrate_java package --name com.mycorp.MyCorpSchemas --version 1.0 --source target/my_corp_schemas --out target
 
-# build an executable gem containing your manifests
+# build an executable gem containing your manifests, allowing you to use it later in another project
 pg_migrate_ruby package --name my_corp_schemas --version 1.0.0 --source target/my_corp_schemas --out target
 
-# tar up the schemas for manual usage
+# tar up the schemas for manual usage, allowing you to use it later using psql
 tar -xvzf my_corp_schemas.tar.gz target/my_corp_schemas
 ```
 
